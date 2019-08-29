@@ -1,4 +1,5 @@
 import { ERC721TokenEvents } from '@0x/contract-wrappers';
+import abiDecoder from 'abi-decoder';
 import { RateLimit } from 'async-sema';
 
 import { COLLECTIBLE_ADDRESS, NETWORK_ID, OPENSEA_API_KEY } from '../../common/constants';
@@ -49,6 +50,30 @@ export class Cheezy implements CollectibleMetadataSource {
         const contractWrappers = await getContractWrappers();
         const web3Wrapper = await getWeb3Wrapper();
         const latestBlock = await web3Wrapper.getBlockNumberAsync();
+
+        abiDecoder.addABI([{
+          'anonymous': false,
+          'inputs': [
+            {
+              'indexed': false,
+              'name': 'from',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'name': 'to',
+              'type': 'address',
+            },
+            {
+              'indexed': false,
+              'name': 'wizardId',
+              'type': 'uint256',
+            },
+          ],
+          'name': 'Transfer',
+          'type': 'event',
+        },
+        ]);
         const events = await contractWrappers.erc721Token.getLogsAsync(
             COLLECTIBLE_ADDRESS,
             ERC721TokenEvents.Transfer,
@@ -56,10 +81,11 @@ export class Cheezy implements CollectibleMetadataSource {
                 fromBlock: 0,
                 toBlock: latestBlock,
             },
-            { _to: userAddress, _tokenId: '1' },
+            { },
         );
+        const logs = abiDecoder.decodeLogs(events);
         // parsing ids from Transfer events
-        const tokenIds = events.map(e => e.args._tokenId.toString());
+        const tokenIds = logs.filter((l: any) => l.events.some((e: any) => e.name === 'to' && e.value === userAddress)).map((l: any) => l.events.find((e: any) => e.name === 'wizardId').value);
 
         // fetching assets by its ids
         const tokenIdsQueryParam = tokenIds.map((id: string) => `token_ids=${id}`).join('&');

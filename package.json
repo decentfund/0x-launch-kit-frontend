@@ -5,11 +5,12 @@
     "dependencies": {
         "0x.js": "^6.0.11",
         "@0x/connect": "^5.0.12",
+        "@0x/contract-wrappers": "^9.1.6",
         "@0x/order-utils": "^8.2.3",
         "@0x/web3-wrapper": "^6.0.6",
-        "@0x/contract-wrappers": "^9.1.6",
         "@types/async-retry": "^1.4.1",
         "@types/recharts": "^1.1.16",
+        "abi-decoder": "^2.2.0",
         "async-retry": "^1.2.3",
         "async-sema": "^3.0.0",
         "connected-react-router": "^6.2.2",
