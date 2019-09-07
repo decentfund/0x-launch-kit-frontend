@@ -1,24 +1,24 @@
-import { BigNumber, SignedOrder } from '0x.js';
-import { createAction } from 'typesafe-actions';
+import {BigNumber, SignedOrder} from '0x.js';
+import {createAction} from 'typesafe-actions';
 
-import { AFFILIATE_FEE_PERCENTAGE, FEE_RECIPIENT } from '../../common/constants';
-import { INSUFFICIENT_ORDERS_TO_FILL_AMOUNT_ERR } from '../../exceptions/common';
-import { InsufficientOrdersAmountException } from '../../exceptions/insufficient_orders_amount_exception';
-import { RelayerException } from '../../exceptions/relayer_exception';
+import {AFFILIATE_FEE_PERCENTAGE, FEE_RECIPIENT} from '../../common/constants';
+import {INSUFFICIENT_ORDERS_TO_FILL_AMOUNT_ERR} from '../../exceptions/common';
+import {InsufficientOrdersAmountException} from '../../exceptions/insufficient_orders_amount_exception';
+import {RelayerException} from '../../exceptions/relayer_exception';
 import {
     cancelSignedOrder,
     getAllOrdersAsUIOrders,
     getAllOrdersAsUIOrdersWithoutOrdersInfo,
     getUserOrdersAsUIOrders,
 } from '../../services/orders';
-import { getRelayer } from '../../services/relayer';
-import { isWeth } from '../../util/known_tokens';
-import { getLogger } from '../../util/logger';
-import { buildLimitOrder, buildMarketOrders, sumTakerAssetFillableOrders } from '../../util/orders';
-import { getTransactionOptions } from '../../util/transactions';
-import { NotificationKind, OrderSide, RelayerState, ThunkCreator, Token, UIOrder, Web3State } from '../../util/types';
-import { updateTokenBalances } from '../blockchain/actions';
-import { getAllCollectibles } from '../collectibles/actions';
+import {getRelayer} from '../../services/relayer';
+import {isWeth} from '../../util/known_tokens';
+import {getLogger} from '../../util/logger';
+import {buildLimitOrder, buildMarketOrders, sumTakerAssetFillableOrders} from '../../util/orders';
+import {getTransactionOptions} from '../../util/transactions';
+import {NotificationKind, OrderSide, RelayerState, ThunkCreator, Token, UIOrder, Web3State} from '../../util/types';
+import {updateTokenBalances} from '../blockchain/actions';
+import {getAllCollectibles} from '../collectibles/actions';
 import {
     getBaseToken,
     getEthAccount,
@@ -29,7 +29,7 @@ import {
     getQuoteToken,
     getWeb3State,
 } from '../selectors';
-import { addNotifications } from '../ui/actions';
+import {addNotifications} from '../ui/actions';
 
 const logger = getLogger('Store::Market::Actions');
 
@@ -160,18 +160,18 @@ export const submitLimitOrder: ThunkCreator = (signedOrder: SignedOrder, amount:
     };
 };
 
-export const submitMarketOrder: ThunkCreator<Promise<{ txHash: string; amountInReturn: BigNumber }>> = (
+export const submitMarketOrder: ThunkCreator<Promise<{txHash: string; amountInReturn: BigNumber}>> = (
     amount: BigNumber,
     side: OrderSide,
 ) => {
-    return async (dispatch, getState, { getContractWrappers, getWeb3Wrapper }) => {
+    return async (dispatch, getState, {getContractWrappers, getWeb3Wrapper}) => {
         const state = getState();
         const ethAccount = getEthAccount(state);
         const gasPrice = getGasPriceInWei(state);
 
         const isBuy = side === OrderSide.Buy;
         const allOrders = isBuy ? getOpenSellOrders(state) : getOpenBuyOrders(state);
-        const { orders, amounts, canBeFilled } = buildMarketOrders(
+        const {orders, amounts, canBeFilled} = buildMarketOrders(
             {
                 amount,
                 orders: allOrders,
@@ -194,10 +194,12 @@ export const submitMarketOrder: ThunkCreator<Promise<{ txHash: string; amountInR
 
             let txHash;
             if (isMarketBuyForwarder) {
-                txHash = await contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+                txHash = await contractWrappers.cheezeWizardsPower.marketBuyOrdersWithEthAsync(
                     orders,
                     amount,
                     ethAccount,
+                    // FIXME: selected wizard
+                    new BigNumber(11),
                     ethAmountRequired,
                     [],
                     AFFILIATE_FEE_PERCENTAGE,
@@ -245,7 +247,7 @@ export const submitMarketOrder: ThunkCreator<Promise<{ txHash: string; amountInR
 
             const amountInReturn = sumTakerAssetFillableOrders(side, orders, amounts);
 
-            return { txHash, amountInReturn };
+            return {txHash, amountInReturn};
         } else {
             window.alert(INSUFFICIENT_ORDERS_TO_FILL_AMOUNT_ERR);
             throw new InsufficientOrdersAmountException();
@@ -268,12 +270,12 @@ export const getOrderBook: ThunkCreator = () => {
     };
 };
 
-export const fetchTakerAndMakerFee: ThunkCreator<Promise<{ makerFee: BigNumber; takerFee: BigNumber }>> = (
+export const fetchTakerAndMakerFee: ThunkCreator<Promise<{makerFee: BigNumber; takerFee: BigNumber}>> = (
     amount: BigNumber,
     price: BigNumber,
     side: OrderSide,
 ) => {
-    return async (dispatch, getState, { getContractWrappers }) => {
+    return async (dispatch, getState, {getContractWrappers}) => {
         const state = getState();
         const ethAccount = getEthAccount(state);
         const baseToken = getBaseToken(state) as Token;
@@ -292,7 +294,7 @@ export const fetchTakerAndMakerFee: ThunkCreator<Promise<{ makerFee: BigNumber; 
             side,
         );
 
-        const { makerFee, takerFee } = order;
+        const {makerFee, takerFee} = order;
 
         return {
             makerFee,

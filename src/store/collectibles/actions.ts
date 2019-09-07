@@ -1,13 +1,13 @@
-import { MetamaskSubprovider, signatureUtils, SignedOrder } from '0x.js';
-import { createAction, createAsyncAction } from 'typesafe-actions';
+import {BigNumber, MetamaskSubprovider, signatureUtils, SignedOrder} from '0x.js';
+import {createAction, createAsyncAction} from 'typesafe-actions';
 
-import { ZERO_ADDRESS } from '../../common/constants';
-import { cancelSignedOrder } from '../../services/orders';
-import { getLogger } from '../../util/logger';
-import { isDutchAuction } from '../../util/orders';
-import { getTransactionOptions } from '../../util/transactions';
-import { Collectible, ThunkCreator } from '../../util/types';
-import { getEthAccount, getGasPriceInWei } from '../selectors';
+import {ZERO_ADDRESS} from '../../common/constants';
+import {cancelSignedOrder} from '../../services/orders';
+import {getLogger} from '../../util/logger';
+import {isDutchAuction} from '../../util/orders';
+import {getTransactionOptions} from '../../util/transactions';
+import {Collectible, ThunkCreator} from '../../util/types';
+import {getEthAccount, getGasPriceInWei} from '../selectors';
 
 const logger = getLogger('Collectibles::Actions');
 
@@ -28,14 +28,14 @@ export const selectCollectible = createAction('collectibles/selectCollectible', 
 });
 
 export const getAllCollectibles: ThunkCreator = () => {
-    return async (dispatch, getState, { getCollectiblesMetadataGateway, getWeb3Wrapper }) => {
+    return async (dispatch, getState, {getCollectiblesMetadataGateway, getWeb3Wrapper}) => {
         dispatch(fetchAllCollectiblesAsync.request());
         try {
             const state = getState();
             const ethAccount = getEthAccount(state);
             const collectiblesMetadataGateway = getCollectiblesMetadataGateway();
             const collectibles = await collectiblesMetadataGateway.fetchAllCollectibles(ethAccount);
-            dispatch(fetchAllCollectiblesAsync.success({ collectibles }));
+            dispatch(fetchAllCollectiblesAsync.success({collectibles}));
         } catch (err) {
             logger.error('There was a problem fetching the collectibles', err);
             dispatch(fetchAllCollectiblesAsync.failure(err));
@@ -44,7 +44,7 @@ export const getAllCollectibles: ThunkCreator = () => {
 };
 
 export const submitBuyCollectible: ThunkCreator<Promise<string>> = (order: SignedOrder, ethAccount: string) => {
-    return async (dispatch, getState, { getContractWrappers, getWeb3Wrapper }) => {
+    return async (dispatch, getState, {getContractWrappers, getWeb3Wrapper}) => {
         const contractWrappers = await getContractWrappers();
         const web3Wrapper = await getWeb3Wrapper();
 
@@ -69,11 +69,13 @@ export const submitBuyCollectible: ThunkCreator<Promise<string>> = (order: Signe
             const buySignedOrder = await signatureUtils.ecSignOrderAsync(provider, buyOrder, ethAccount);
             tx = await contractWrappers.dutchAuction.matchOrdersAsync(buySignedOrder, order, ethAccount, gasOptions);
         } else {
-            tx = await contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+            tx = await contractWrappers.cheezeWizardsPower.marketBuyOrdersWithEthAsync(
                 [order],
                 order.makerAssetAmount,
                 ethAccount,
                 order.takerAssetAmount,
+                // FIXME: selected wizard
+                new BigNumber(11),
                 [],
                 0,
                 ZERO_ADDRESS,

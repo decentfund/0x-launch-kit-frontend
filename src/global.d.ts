@@ -10,3 +10,4 @@ declare module '*.json' {
     const value: any;
     export default value;
 }
+declare module '@chzwzrds/contracts-deploy/src/contract_addresses';

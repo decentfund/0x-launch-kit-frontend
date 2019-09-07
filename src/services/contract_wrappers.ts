@@ -1,4 +1,4 @@
-import { ContractWrappers } from '0x.js';
+import { ContractWrappers } from '@chzwzrds/0x-cheeze-wizards-power-extension';
 
 import { NETWORK_ID } from '../common/constants';
 

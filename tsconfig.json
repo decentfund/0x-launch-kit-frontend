@@ -15,5 +15,8 @@
         "jsx": "preserve",
         "isolatedModules": true
     },
+    "references": [
+      { "path": "../0x-cheeze-wizards-power-extension" }
+    ],
     "include": ["src"]
 }

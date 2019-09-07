@@ -5,9 +5,10 @@
     "dependencies": {
         "0x.js": "^6.0.11",
         "@0x/connect": "^5.0.12",
-        "@0x/contract-wrappers": "^9.1.6",
         "@0x/order-utils": "^8.2.3",
         "@0x/web3-wrapper": "^6.0.6",
+        "@chzwzrds/0x-cheeze-wizards-power-extension": "^1.0.0",
+        "@chzwzrds/contracts-deploy": "^1.0.0",
         "@types/async-retry": "^1.4.1",
         "@types/recharts": "^1.1.16",
         "abi-decoder": "^2.2.0",
