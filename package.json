@@ -27,7 +27,7 @@
         "react-redux": "^6.0.0",
         "react-router": "^4.3.1",
         "react-router-dom": "^4.3.1",
-        "react-scripts": "3.0.0",
+        "react-scripts": "3.1.1",
         "react-svg": "^10.0.9",
         "react-timeago": "^4.4.0",
         "react-tooltip": "^3.10.0",
